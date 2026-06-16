@@ -1,0 +1,2185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trading Journal — Track. Improve. Repeat.</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Mono:wght@300;400;500&display=swap');
+
+:root {
+  --paper:      #f0ebe0;
+  --paper2:     #e8e2d4;
+  --paper3:     #ddd6c6;
+  --ink:        #2a2318;
+  --ink2:       #5a4e3e;
+  --ink3:       #8a7d6a;
+  --ink4:       #b0a492;
+  --brown:      #6b4c2a;
+  --brown2:     #8b6340;
+  --green-head: #3d5a3e;
+  --rust:       #8b3a2a;
+  --profit:     #2d6a2d;
+  --loss:       #8b2020;
+  --warn:       #7a5c1a;
+  --accent:     #4a7c59;
+  --border:     #c4b89a;
+  --border2:    #d4c9b0;
+  --shadow:     rgba(42,35,24,0.12);
+  --serif:      'Playfair Display', Georgia, serif;
+  --body:       'Lora', Georgia, serif;
+  --mono:       'DM Mono', 'Courier New', monospace;
+  --radius:     4px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--body);
+  background: #cfc8b8;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(180,170,150,0.25) 27px, rgba(180,170,150,0.25) 28px);
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── HEADER ── */
+header {
+  background: var(--brown);
+  background-image: linear-gradient(135deg, #5a3e22 0%, #7a5535 50%, #6b4c2a 100%);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.3);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  min-height: 56px;
+}
+
+.logo {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.logo-title {
+  font-family: var(--serif);
+  font-size: 22px;
+  font-weight: 900;
+  color: #f5ead8;
+  letter-spacing: 1px;
+}
+
+.logo-title span { color: #e8c87a; }
+
+.logo-sub {
+  font-family: var(--body);
+  font-size: 11px;
+  font-style: italic;
+  color: rgba(245,234,216,0.6);
+  letter-spacing: 0.5px;
+}
+
+.tab-nav {
+  display: flex;
+  gap: 2px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.tab-btn {
+  padding: 7px 18px;
+  border: none;
+  background: transparent;
+  color: rgba(245,234,216,0.65);
+  font-family: var(--body);
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.tab-btn.active {
+  background: var(--paper);
+  color: var(--brown);
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+
+.tab-btn:hover:not(.active) { color: #f5ead8; background: rgba(255,255,255,0.1); }
+
+.header-date {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: rgba(245,234,216,0.55);
+  letter-spacing: 0.5px;
+}
+
+/* ── LAYOUT ── */
+.app-body {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - 56px);
+  overflow: hidden;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 248px;
+  min-width: 248px;
+  background: var(--paper2);
+  border-right: 2px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: inset -4px 0 8px rgba(0,0,0,0.04);
+}
+
+.sidebar-top {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--paper3);
+}
+
+.sidebar-label {
+  font-family: var(--serif);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 10px;
+}
+
+.sidebar-top input[type="date"] {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.sidebar-top input[type="date"]:focus { outline: none; border-color: var(--brown2); }
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: sepia(1) saturate(2) hue-rotate(10deg) brightness(0.6);
+  cursor: pointer;
+}
+
+.btn-new-entry {
+  margin-top: 10px;
+  width: 100%;
+  padding: 9px;
+  background: var(--brown);
+  background-image: linear-gradient(135deg, #5a3e22, #7a5535);
+  border: none;
+  border-radius: var(--radius);
+  color: #f5ead8;
+  font-family: var(--serif);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.btn-new-entry:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.btn-new-entry:active { transform: translateY(0); }
+
+.entries-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.entries-list::-webkit-scrollbar { width: 4px; }
+.entries-list::-webkit-scrollbar-track { background: transparent; }
+.entries-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.entry-item {
+  padding: 9px 11px;
+  background: var(--paper);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.18s;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.entry-item:hover { border-color: var(--brown2); background: #f5ede0; }
+.entry-item.active { border-color: var(--brown); background: #f5ede0; box-shadow: 0 2px 6px rgba(107,76,42,0.15); }
+
+.entry-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 6px; bottom: 6px;
+  width: 3px;
+  background: var(--brown);
+  border-radius: 0 2px 2px 0;
+}
+
+.entry-date { font-family: var(--mono); font-size: 11px; color: var(--ink); font-weight: 500; }
+.entry-meta { font-size: 10px; color: var(--ink3); margin-top: 2px; display: flex; justify-content: space-between; font-family: var(--body); }
+.entry-pnl { font-family: var(--mono); font-size: 11px; font-weight: 500; }
+.entry-pnl.profit { color: var(--profit); }
+.entry-pnl.loss   { color: var(--loss); }
+
+/* ── MAIN CONTENT ── */
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px 32px;
+  background: transparent;
+}
+
+.main-content::-webkit-scrollbar { width: 6px; }
+.main-content::-webkit-scrollbar-track { background: transparent; }
+.main-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+/* ── PAGES ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── NOTEBOOK PAGE ── */
+.notebook-page {
+  background: var(--paper);
+  border-radius: 3px;
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.12),
+    0 8px 24px rgba(0,0,0,0.08),
+    inset 0 0 0 1px rgba(196,184,154,0.5);
+  max-width: 860px;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Red margin line like a real notebook */
+.notebook-page::before {
+  content: '';
+  position: absolute;
+  left: 52px;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: rgba(180,60,60,0.25);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Horizontal lines */
+.notebook-page::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 27px,
+    rgba(160,150,130,0.2) 27px,
+    rgba(160,150,130,0.2) 28px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── BOOK TITLE ── */
+.book-header {
+  background: var(--paper3);
+  background-image: linear-gradient(180deg, var(--paper2) 0%, var(--paper3) 100%);
+  padding: 28px 40px 20px;
+  text-align: center;
+  border-bottom: 2px solid var(--border);
+  position: relative;
+  z-index: 2;
+}
+
+.book-title {
+  font-family: var(--serif);
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--ink);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.book-sub {
+  font-family: var(--body);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ink3);
+  margin-top: 4px;
+  letter-spacing: 1px;
+}
+
+.book-meta {
+  display: flex;
+  gap: 0;
+  margin-top: 18px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+.book-meta-field {
+  flex: 1;
+  padding: 10px 12px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.book-meta-field:last-child { border-right: none; }
+
+.book-meta-label {
+  font-family: var(--body);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--ink3);
+}
+
+.book-meta-field input,
+.book-meta-field select {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink);
+  padding: 0;
+  outline: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.book-meta-field input:focus,
+.book-meta-field select:focus {
+  border-bottom-color: var(--brown2);
+}
+
+.book-meta-field select option { background: var(--paper); color: var(--ink); }
+
+/* ── SECTION HEADER (brown bar like image) ── */
+.section-header {
+  background: var(--brown);
+  background-image: linear-gradient(90deg, #5a3e22, #7a5535, #5a3e22);
+  color: #f5ead8;
+  padding: 9px 20px;
+  font-family: var(--serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 2;
+}
+
+.section-header.green-hd {
+  background: var(--green-head);
+  background-image: linear-gradient(90deg, #2d4a2e, #4a6e4b, #2d4a2e);
+}
+
+.section-header.summary-hd {
+  background: #4a3060;
+  background-image: linear-gradient(90deg, #352048, #5a3878, #352048);
+}
+
+/* ── SECTION BODY ── */
+.section-body {
+  padding: 18px 20px;
+  position: relative;
+  z-index: 2;
+  background: var(--paper);
+}
+
+/* ── TWO-COLUMN LAYOUT ── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.two-col .section-col {
+  border-right: 1px solid var(--border);
+}
+
+.two-col .section-col:last-child { border-right: none; }
+
+/* ── FIELD ROW ── */
+.field-row {
+  display: flex;
+  align-items: flex-start;
+  min-height: 34px;
+  border-bottom: 1px solid rgba(160,150,130,0.3);
+  padding: 0 0 0 8px;
+}
+
+.field-row:last-child { border-bottom: none; }
+
+.field-label {
+  width: 130px;
+  min-width: 130px;
+  font-family: var(--body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink2);
+  padding: 8px 10px 8px 0;
+  flex-shrink: 0;
+}
+
+.field-input {
+  flex: 1;
+  padding: 7px 8px;
+}
+
+.field-input input,
+.field-input select,
+.field-input textarea {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--border2);
+  background: transparent;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink);
+  padding: 1px 4px 3px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.field-input input:focus,
+.field-input select:focus,
+.field-input textarea:focus {
+  border-bottom-color: var(--brown2);
+  background: rgba(255,255,255,0.4);
+}
+
+.field-input textarea {
+  resize: vertical;
+  min-height: 52px;
+  font-family: var(--body);
+  font-size: 12px;
+  line-height: 1.6;
+  border: 1px solid var(--border2);
+  border-radius: 2px;
+  padding: 6px 8px;
+  margin-top: 2px;
+  background: rgba(255,255,255,0.3);
+}
+
+.field-input select option { background: var(--paper); color: var(--ink); }
+
+/* ── BUY / SELL TOGGLE ── */
+.bs-toggle {
+  display: flex;
+  gap: 6px;
+  padding-top: 4px;
+}
+
+.bs-btn {
+  padding: 4px 14px;
+  border: 1px solid var(--border);
+  background: var(--paper2);
+  color: var(--ink3);
+  font-family: var(--serif);
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 1px;
+}
+
+.bs-btn.buy.active  { background: rgba(45,106,45,0.12); color: var(--profit); border-color: var(--profit); }
+.bs-btn.sell.active { background: rgba(139,32,32,0.1);  color: var(--loss);   border-color: var(--loss); }
+.bs-btn:hover:not(.active) { background: var(--paper3); }
+
+/* ── MARKET BIAS ── */
+.bias-toggle {
+  display: flex;
+  gap: 6px;
+  padding-top: 4px;
+}
+
+.bias-btn {
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  background: var(--paper2);
+  color: var(--ink3);
+  font-family: var(--body);
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.bias-btn.bull.active { background: rgba(45,106,45,0.12); color: var(--profit); border-color: var(--profit); }
+.bias-btn.bear.active { background: rgba(139,32,32,0.1);  color: var(--loss);   border-color: var(--loss); }
+
+/* ── CONFIDENCE SCORE ── */
+.conf-score {
+  display: flex;
+  gap: 5px;
+  padding-top: 6px;
+  flex-wrap: wrap;
+}
+
+.conf-btn {
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--border);
+  background: var(--paper2);
+  color: var(--ink3);
+  font-family: var(--mono);
+  font-size: 11px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.conf-btn.active { background: var(--brown); color: #f5ead8; border-color: var(--brown); }
+.conf-btn:hover:not(.active) { background: var(--paper3); }
+
+/* ── CHECKBOXES ── */
+.check-row {
+  display: flex;
+  gap: 16px;
+  padding-top: 6px;
+  flex-wrap: wrap;
+}
+
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--ink2);
+  cursor: pointer;
+}
+
+.check-item input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  cursor: pointer;
+  accent-color: var(--brown);
+}
+
+/* ── TAGS ── */
+.tags-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding-top: 2px;
+}
+
+.tag-checkbox { display: none; }
+
+.tag-label {
+  padding: 4px 11px;
+  background: var(--paper2);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  font-family: var(--body);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink3);
+  cursor: pointer;
+  transition: all 0.18s;
+  user-select: none;
+  letter-spacing: 0.3px;
+}
+
+.tag-checkbox:checked + .tag-label {
+  background: rgba(107,76,42,0.1);
+  border-color: var(--brown2);
+  color: var(--brown);
+  font-weight: 600;
+}
+
+/* ── RESULT TOGGLE ── */
+.result-toggle {
+  display: flex;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.result-btn {
+  padding: 5px 18px;
+  border: 1px solid var(--border);
+  background: var(--paper2);
+  color: var(--ink3);
+  font-family: var(--serif);
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.result-btn.win.active  { background: rgba(45,106,45,0.15);  color: var(--profit); border-color: var(--profit); }
+.result-btn.loss.active { background: rgba(139,32,32,0.12);  color: var(--loss);   border-color: var(--loss); }
+
+/* ── CALCULATED DISPLAY ── */
+.calc-display {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink3);
+  padding: 2px 4px;
+  min-width: 80px;
+  border-bottom: 1px solid var(--border2);
+}
+
+.calc-display.profit { color: var(--profit); font-weight: 600; }
+.calc-display.loss   { color: var(--loss);   font-weight: 600; }
+
+/* ── SCREENSHOT BOX ── */
+.screenshot-box {
+  border: 1.5px dashed var(--border);
+  border-radius: 3px;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  background: rgba(255,255,255,0.3);
+  transition: all 0.2s;
+  min-height: 100px;
+}
+
+.screenshot-box:hover { border-color: var(--brown2); background: rgba(255,255,255,0.5); }
+.screenshot-box input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.screenshot-box-text { font-family: var(--body); font-style: italic; font-size: 12px; color: var(--ink3); }
+.screenshot-box-text span { font-size: 22px; display: block; margin-bottom: 4px; opacity: 0.5; }
+
+.chart-preview-img {
+  width: 100%;
+  max-height: 180px;
+  object-fit: contain;
+  border-radius: 2px;
+  display: none;
+}
+
+/* ── MOTIVATIONAL ITALICS ── */
+.motto {
+  text-align: right;
+  font-family: var(--body);
+  font-style: italic;
+  font-size: 10px;
+  color: var(--ink4);
+  padding: 6px 14px 2px;
+  letter-spacing: 0.3px;
+  position: relative;
+  z-index: 2;
+  background: var(--paper);
+}
+
+/* ── SUMMARY TABLE-STYLE ROWS ── */
+.summary-row {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid rgba(160,150,130,0.3);
+  min-height: 36px;
+}
+
+.summary-row:last-child { border-bottom: none; }
+
+.summary-key {
+  width: 200px;
+  min-width: 200px;
+  font-family: var(--body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink2);
+  padding: 9px 12px;
+  background: var(--paper2);
+  border-right: 1px solid rgba(160,150,130,0.3);
+}
+
+.summary-val {
+  flex: 1;
+  padding: 6px 12px;
+}
+
+.summary-val input,
+.summary-val textarea {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--border2);
+  background: transparent;
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--ink);
+  padding: 2px 4px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.summary-val input:focus,
+.summary-val textarea:focus { border-bottom-color: var(--brown2); }
+
+.summary-val textarea { resize: vertical; min-height: 36px; padding: 3px 4px; }
+
+/* ── P&L INLINE ── */
+.pnl-row-inner {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 7px 0;
+}
+
+.pnl-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--ink2);
+}
+
+.pnl-cell input {
+  width: 110px;
+  border: none;
+  border-bottom: 1px solid var(--border2);
+  background: transparent;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink);
+  padding: 1px 4px;
+  outline: none;
+}
+
+.pnl-cell input:focus { border-bottom-color: var(--brown2); }
+
+/* ── REFLECTION BOX ── */
+.reflection-box {
+  border: 1.5px solid var(--accent);
+  border-radius: 3px;
+  margin: 0;
+  position: relative;
+  background: rgba(255,255,255,0.25);
+}
+
+.reflection-title {
+  font-family: var(--body);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  padding: 8px 14px 0;
+  letter-spacing: 0.5px;
+}
+
+.reflection-box textarea {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--ink);
+  padding: 8px 14px 12px;
+  outline: none;
+  resize: vertical;
+  min-height: 90px;
+  line-height: 1.8;
+}
+
+/* ── FORM ACTIONS ── */
+.form-actions {
+  padding: 16px 20px;
+  background: var(--paper3);
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.btn {
+  padding: 9px 20px;
+  border-radius: var(--radius);
+  font-family: var(--serif);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.5px;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--brown);
+  background-image: linear-gradient(135deg, #5a3e22, #7a5535);
+  color: #f5ead8;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--ink2);
+}
+
+.btn-outline:hover { background: var(--paper2); border-color: var(--brown2); color: var(--brown); }
+
+.btn-danger {
+  background: rgba(139,32,32,0.08);
+  border: 1px solid rgba(139,32,32,0.3);
+  color: var(--loss);
+}
+
+.btn-danger:hover { background: rgba(139,32,32,0.15); }
+
+/* ── REMINDER ── */
+#reminder {
+  background: rgba(122,92,26,0.1);
+  border: 1px solid rgba(122,92,26,0.3);
+  border-radius: 3px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--warn);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 860px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#reminder button { margin-left: auto; background: none; border: none; color: var(--ink3); cursor: pointer; font-size: 14px; }
+
+/* ── DASHBOARD ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+  max-width: 860px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.stat-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+
+.stat-card.c1::before { background: linear-gradient(90deg, var(--brown), var(--brown2)); }
+.stat-card.c2::before { background: linear-gradient(90deg, var(--profit), #5a9e5a); }
+.stat-card.c3::before { background: linear-gradient(90deg, var(--loss), #c05050); }
+.stat-card.c4::before { background: linear-gradient(90deg, #4a6e8e, #6a8eae); }
+.stat-card.c5::before { background: linear-gradient(90deg, var(--warn), #c09020); }
+
+.stat-label {
+  font-family: var(--body);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.stat-value.profit { color: var(--profit); }
+.stat-value.loss   { color: var(--loss); }
+
+/* ── DASH CARD ── */
+.dash-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  margin-bottom: 14px;
+  max-width: 860px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.dash-card-title {
+  background: var(--paper3);
+  border-bottom: 1px solid var(--border);
+  padding: 9px 16px;
+  font-family: var(--serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ink2);
+}
+
+.dash-card-body { padding: 16px; }
+
+/* ── BAR CHART ── */
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 90px;
+}
+
+.bar-item {
+  flex: 1;
+  border-radius: 2px 2px 0 0;
+  min-height: 3px;
+  cursor: pointer;
+  position: relative;
+}
+
+.bar-item:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 3px;
+  padding: 3px 7px;
+  font-size: 10px;
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+
+/* ── FILTER BAR ── */
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  max-width: 860px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.filter-bar select,
+.filter-bar input[type="text"] {
+  padding: 7px 10px;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.filter-bar select:focus,
+.filter-bar input:focus { border-color: var(--brown2); }
+.filter-bar select option { background: var(--paper); }
+
+/* ── TABLE ── */
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  max-width: 860px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--body);
+  font-size: 12px;
+  background: var(--paper);
+}
+
+thead th {
+  padding: 10px 13px;
+  text-align: left;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  background: var(--paper3);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+tbody tr { border-bottom: 1px solid rgba(196,184,154,0.4); transition: background 0.15s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--paper2); }
+tbody td { padding: 9px 13px; color: var(--ink); }
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-family: var(--serif);
+}
+
+.badge-buy  { background: rgba(45,106,45,0.1);  color: var(--profit); border: 1px solid rgba(45,106,45,0.3); }
+.badge-sell { background: rgba(139,32,32,0.08); color: var(--loss);   border: 1px solid rgba(139,32,32,0.25); }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  padding: 11px 18px;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-family: var(--body);
+  font-size: 13px;
+  color: var(--ink);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+  transform: translateY(70px);
+  opacity: 0;
+  transition: all 0.28s ease;
+  z-index: 999;
+}
+
+#toast.show { transform: translateY(0); opacity: 1; }
+#toast.success { border-left: 3px solid var(--profit); }
+#toast.error   { border-left: 3px solid var(--loss); }
+
+/* ── PAGE TITLES ── */
+.page-title {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--ink);
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  max-width: 860px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.page-sub {
+  font-family: var(--body);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--ink3);
+  margin-bottom: 20px;
+  max-width: 860px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+.export-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ── EMPTY STATE ── */
+.empty-state { text-align: center; padding: 40px 20px; color: var(--ink3); }
+.empty-state .icon { font-size: 36px; margin-bottom: 8px; opacity: 0.5; }
+.empty-state p { font-family: var(--body); font-style: italic; font-size: 13px; }
+
+/* ── SECTION DIVIDER ── */
+.section-divider { height: 1px; background: var(--border); margin: 0; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <span class="logo-title">Trade<span>Log</span></span>
+    <span class="logo-sub">Track. Improve. Repeat.</span>
+  </div>
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="showPage('journal')">Journal</button>
+    <button class="tab-btn" onclick="showPage('dashboard')">Dashboard</button>
+    <button class="tab-btn" onclick="showPage('history')">History</button>
+  </div>
+  <div class="header-date" id="header-date"></div>
+</header>
+
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-label">Entries</div>
+      <input type="date" id="sidebar-date" onchange="loadDate(this.value)">
+      <button class="btn-new-entry" onclick="newEntry()">+ New Entry</button>
+    </div>
+    <div class="entries-list" id="entries-list">
+      <div class="empty-state">
+        <div class="icon">📋</div>
+        <p>No entries yet</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-content">
+
+    <!-- ══════════════════ JOURNAL PAGE ══════════════════ -->
+    <div class="page active" id="page-journal">
+
+      <div id="reminder" style="display:none">
+        ✏️ <strong>Reminder:</strong> No trades logged for today yet — don't forget to journal your session.
+        <button onclick="dismissReminder()">✕</button>
+      </div>
+
+      <!-- NOTEBOOK -->
+      <div class="notebook-page">
+
+        <!-- TITLE BLOCK -->
+        <div class="book-header">
+          <div class="book-title">Trading Journal</div>
+          <div class="book-sub">Track. Improve. Repeat.</div>
+
+          <div class="book-meta">
+            <div class="book-meta-field">
+              <div class="book-meta-label">Date</div>
+              <input type="date" id="entry-date-display" onchange="currentDate=this.value;document.getElementById('sidebar-date').value=this.value">
+            </div>
+            <div class="book-meta-field">
+              <div class="book-meta-label">Market Session</div>
+              <select id="market-session">
+                <option>Pre-Market</option>
+                <option>London</option>
+                <option>New York</option>
+                <option>Asia</option>
+                <option>NSE / BSE</option>
+                <option>Crypto 24H</option>
+              </select>
+            </div>
+            <div class="book-meta-field">
+              <div class="book-meta-label">Exchange / Market</div>
+              <input type="text" id="exchange" placeholder="NSE, BSE, NASDAQ…">
+            </div>
+            <div class="book-meta-field">
+              <div class="book-meta-label">Market Bias</div>
+              <div class="bias-toggle">
+                <button class="bias-btn bull active" id="btn-bull" onclick="setBias('Bullish')">▲ Bullish</button>
+                <button class="bias-btn bear" id="btn-bear" onclick="setBias('Bearish')">▼ Bearish</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TWO-COLUMN: EXECUTION + PSYCHOLOGY -->
+        <div class="two-col">
+
+          <!-- LEFT: TRADE EXECUTION -->
+          <div class="section-col">
+            <div class="section-header">Trade Execution</div>
+            <div class="section-body" style="padding:0">
+
+              <div class="field-row">
+                <div class="field-label">Asset / Instrument</div>
+                <div class="field-input"><input type="text" id="asset" placeholder="RELIANCE, NIFTY, AAPL…"></div>
+              </div>
+
+              <div class="field-row">
+                <div class="field-label">Entry Price</div>
+                <div class="field-input"><input type="number" id="entry-price" placeholder="0.00" step="0.01" oninput="calcPnL()"></div>
+              </div>
+
+              <div class="field-row">
+                <div class="field-label">Entry Time</div>
+                <div class="field-input"><input type="time" id="entry-time" onchange="calcDuration()"></div>
+              </div>
+
+              <div class="field-row">
+                <div class="field-label">Exit Price</div>
+                <div class="field-input"><input type="number" id="exit-price" placeholder="0.00" step="0.01" oninput="calcPnL()"></div>
+              </div>
+
+              <div class="field-row">
+                <div class="field-label">Exit Time</div>
+                <div class="field-input"><input type="time" id="exit-time" onchange="calcDuration()"></div>
+              </div>
+
+              <div class="field-row">
+                <div class="field-label">Target Price</div>
+                <div class="field-input"><input type="number" id="target-price" placeholder="0.00" step="0.01"></div>
+              </div>
+
+              <div class="field-row">
+                <div class="field-label">Stop Loss</div>
+                <div class="field-input"><input type="number" id="stoploss-price" placeholder="0.00" step="0.01"></div>
+              </div>
+
+              <div class="field-row">
+                <div class="field-label">Quantity / Lots</div>
+                <div class="field-input"><input type="number" id="quantity" placeholder="1" step="1" oninput="calcPnL()"></div>
+              </div>
+
+              <div class="field-row">
+                <div class="field-label">Holding Duration</div>
+                <div class="field-input"><span class="calc-display neutral" id="holding-duration">—</span></div>
+              </div>
+
+              <div class="field-row">
+                <div class="field-label">Setup Type</div>
+                <div class="field-input">
+                  <select id="setup-type">
+                    <option value="">— Select —</option>
+                    <option>Breakout</option>
+                    <option>Breakdown</option>
+                    <option>Reversal</option>
+                    <option>Momentum</option>
+                    <option>News-Based</option>
+                    <option>Support / Resistance</option>
+                    <option>Trend Continuation</option>
+                    <option>Gap Fill</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field-label">Timeframe</div>
+                <div class="field-input">
+                  <select id="timeframe">
+                    <option value="">— Select —</option>
+                    <option>1 Min</option>
+                    <option>5 Min</option>
+                    <option>15 Min</option>
+                    <option>30 Min</option>
+                    <option>1 Hour</option>
+                    <option>4 Hour</option>
+                    <option>Daily</option>
+                    <option>Weekly</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field-row" style="border-bottom:none">
+                <div class="field-label">Direction</div>
+                <div class="field-input">
+                  <div class="bs-toggle">
+                    <button class="bs-btn buy active" id="btn-buy" onclick="setDirection('BUY')">Buy</button>
+                    <button class="bs-btn sell" id="btn-sell" onclick="setDirection('SELL')">Sell</button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="motto">Discipline builds consistency.</div>
+          </div>
+
+          <!-- RIGHT: TRADE PSYCHOLOGY -->
+          <div class="section-col">
+            <div class="section-header green-hd">Trade Psychology</div>
+            <div class="section-body" style="padding:0">
+
+              <div class="field-row">
+                <div class="field-label">Emotion Before Entry</div>
+                <div class="field-input">
+                  <select id="mood">
+                    <option value="">— Select —</option>
+                    <option>Calm</option>
+                    <option>Confident</option>
+                    <option>Fear</option>
+                    <option>Greed</option>
+                    <option>Overconfidence</option>
+                    <option>Revenge</option>
+                    <option>FOMO</option>
+                    <option>Anxious</option>
+                    <option>Neutral</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field-label">Confidence Score</div>
+                <div class="field-input">
+                  <div class="conf-score" id="conf-score">
+                    <button class="conf-btn" onclick="setConf(1)">1</button>
+                    <button class="conf-btn" onclick="setConf(2)">2</button>
+                    <button class="conf-btn" onclick="setConf(3)">3</button>
+                    <button class="conf-btn" onclick="setConf(4)">4</button>
+                    <button class="conf-btn" onclick="setConf(5)">5</button>
+                    <button class="conf-btn" onclick="setConf(6)">6</button>
+                    <button class="conf-btn" onclick="setConf(7)">7</button>
+                    <button class="conf-btn" onclick="setConf(8)">8</button>
+                    <button class="conf-btn" onclick="setConf(9)">9</button>
+                    <button class="conf-btn" onclick="setConf(10)">10</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field-label">Was setup valid?</div>
+                <div class="field-input">
+                  <div class="check-row">
+                    <label class="check-item"><input type="checkbox" id="setup-yes"> Yes</label>
+                    <label class="check-item"><input type="checkbox" id="setup-no"> No</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field-label">Did I follow my rules?</div>
+                <div class="field-input">
+                  <div class="check-row">
+                    <label class="check-item"><input type="checkbox" id="rules-yes"> Yes</label>
+                    <label class="check-item"><input type="checkbox" id="rules-no"> No</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field-label">Fear / Greed / Revenge</div>
+                <div class="field-input">
+                  <div class="check-row">
+                    <label class="check-item"><input type="checkbox" id="psych-fear"> Fear</label>
+                    <label class="check-item"><input type="checkbox" id="psych-greed"> Greed</label>
+                    <label class="check-item"><input type="checkbox" id="psych-revenge"> Revenge</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field-row" style="border-bottom:none">
+                <div class="field-label">Chart Screenshot</div>
+                <div class="field-input" style="padding:8px 8px">
+                  <div class="screenshot-box" id="upload-zone">
+                    <input type="file" accept="image/*" id="chart-input" onchange="handleChartUpload(event)">
+                    <div class="screenshot-box-text" id="upload-text">
+                      <span>📷</span>
+                      Screenshot Box<br>
+                      <em style="font-size:10px">(click to upload)</em>
+                    </div>
+                    <img id="chart-preview" class="chart-preview-img" alt="Chart">
+                  </div>
+                  <div id="chart-actions" style="margin-top:6px;display:none">
+                    <button class="btn btn-outline" style="font-size:10px;padding:4px 10px" onclick="removeChart()">✕ Remove</button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="motto">One good habit can change your equity curve.</div>
+          </div>
+        </div>
+
+        <!-- TRADE TAGS -->
+        <div class="section-divider"></div>
+        <div class="section-header" style="background:var(--ink2);background-image:linear-gradient(90deg,#3a3028,#5a4e3e,#3a3028)">Trade Type Tags</div>
+        <div class="section-body">
+          <div class="tags-wrap">
+            <input type="checkbox" class="tag-checkbox" id="tag-intraday"><label class="tag-label" for="tag-intraday">Intraday</label>
+            <input type="checkbox" class="tag-checkbox" id="tag-swing"><label class="tag-label" for="tag-swing">Swing</label>
+            <input type="checkbox" class="tag-checkbox" id="tag-positional"><label class="tag-label" for="tag-positional">Positional</label>
+            <input type="checkbox" class="tag-checkbox" id="tag-breakout"><label class="tag-label" for="tag-breakout">Breakout</label>
+            <input type="checkbox" class="tag-checkbox" id="tag-breakdown"><label class="tag-label" for="tag-breakdown">Breakdown</label>
+            <input type="checkbox" class="tag-checkbox" id="tag-news"><label class="tag-label" for="tag-news">News-Based</label>
+            <input type="checkbox" class="tag-checkbox" id="tag-reversal"><label class="tag-label" for="tag-reversal">Reversal</label>
+            <input type="checkbox" class="tag-checkbox" id="tag-momentum"><label class="tag-label" for="tag-momentum">Momentum</label>
+            <input type="checkbox" class="tag-checkbox" id="tag-scalp"><label class="tag-label" for="tag-scalp">Scalp</label>
+            <input type="checkbox" class="tag-checkbox" id="tag-options"><label class="tag-label" for="tag-options">Options</label>
+            <input type="checkbox" class="tag-checkbox" id="tag-futures"><label class="tag-label" for="tag-futures">Futures</label>
+            <input type="checkbox" class="tag-checkbox" id="tag-algo"><label class="tag-label" for="tag-algo">Algo</label>
+          </div>
+        </div>
+
+        <!-- SUMMARY -->
+        <div class="section-divider"></div>
+        <div class="section-header summary-hd">Summary</div>
+        <div class="section-body" style="padding:0">
+          <div class="summary-row" style="align-items:center">
+            <div class="summary-key">Result</div>
+            <div class="summary-val">
+              <div class="result-toggle" style="padding:4px 0">
+                <button class="result-btn win" id="result-win" onclick="setResult('WIN')">✓ Win</button>
+                <button class="result-btn loss" id="result-loss" onclick="setResult('LOSS')">✕ Loss</button>
+              </div>
+            </div>
+            <div style="padding:6px 12px;border-left:1px solid rgba(160,150,130,0.3);display:flex;gap:24px;align-items:center;flex:1">
+              <div class="pnl-cell">P&amp;L ₹: <span class="calc-display" id="pnl-display">—</span></div>
+              <div class="pnl-cell">P&amp;L %: <span class="calc-display" id="pnl-pct-display">—</span></div>
+            </div>
+          </div>
+
+          <div class="summary-row">
+            <div class="summary-key">Lesson learned</div>
+            <div class="summary-val"><textarea id="lesson-learned" rows="2" placeholder="What did this trade teach you?"></textarea></div>
+          </div>
+
+          <div class="summary-row">
+            <div class="summary-key">Biggest mistake</div>
+            <div class="summary-val"><textarea id="biggest-mistake" rows="2" placeholder="What went wrong or what would you do differently?"></textarea></div>
+          </div>
+
+          <div class="summary-row" style="border-bottom:none">
+            <div class="summary-key">Improvement for next trade</div>
+            <div class="summary-val"><textarea id="improvement" rows="2" placeholder="One concrete action to improve next time…"></textarea></div>
+          </div>
+        </div>
+
+        <div class="motto" style="padding:6px 16px 4px">Track behavior, not only profits.</div>
+
+        <!-- JOURNAL NOTES -->
+        <div class="section-divider"></div>
+        <div class="section-header" style="background:#3a5a4a;background-image:linear-gradient(90deg,#2a4a38,#4a7a5a,#2a4a38)">Trade Journal Notes</div>
+        <div class="section-body" style="display:flex;flex-direction:column;gap:14px">
+
+          <div>
+            <div style="font-family:var(--body);font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);margin-bottom:6px">Pre-Trade Plan — Why am I entering this trade?</div>
+            <textarea id="pre-plan" rows="3" style="width:100%;border:1px solid var(--border2);border-radius:2px;background:rgba(255,255,255,0.3);font-family:var(--body);font-size:12px;color:var(--ink);padding:8px 10px;outline:none;resize:vertical;line-height:1.7;transition:border-color 0.2s" placeholder="Market context, setup rationale, confirmation signals, risk plan…" onfocus="this.style.borderColor='var(--brown2)'" onblur="this.style.borderColor='var(--border2)'"></textarea>
+          </div>
+
+          <div>
+            <div style="font-family:var(--body);font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);margin-bottom:6px">Post-Trade Notes — What actually happened?</div>
+            <textarea id="post-notes" rows="3" style="width:100%;border:1px solid var(--border2);border-radius:2px;background:rgba(255,255,255,0.3);font-family:var(--body);font-size:12px;color:var(--ink);padding:8px 10px;outline:none;resize:vertical;line-height:1.7;transition:border-color 0.2s" placeholder="Execution, emotions, deviations from plan, what worked / didn't…" onfocus="this.style.borderColor='var(--brown2)'" onblur="this.style.borderColor='var(--border2)'"></textarea>
+          </div>
+
+          <div>
+            <div style="font-family:var(--body);font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);margin-bottom:6px">Daily Learning Summary</div>
+            <textarea id="daily-learning" rows="2" style="width:100%;border:1px solid var(--border2);border-radius:2px;background:rgba(255,255,255,0.3);font-family:var(--body);font-size:12px;color:var(--ink);padding:8px 10px;outline:none;resize:vertical;line-height:1.7;transition:border-color 0.2s" placeholder="Key takeaway or lesson from today's session…" onfocus="this.style.borderColor='var(--brown2)'" onblur="this.style.borderColor='var(--border2)'"></textarea>
+          </div>
+        </div>
+
+        <!-- REFLECTION BOX -->
+        <div class="section-divider"></div>
+        <div class="section-body">
+          <div class="reflection-box">
+            <div class="reflection-title">Trade Reflection / Special Notes</div>
+            <textarea id="special-notes" placeholder="Market observations, news events, patterns noticed, anything else worth remembering…"></textarea>
+          </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="form-actions">
+          <button class="btn btn-primary" onclick="saveEntry()">✦ Save Entry</button>
+          <button class="btn btn-outline" onclick="clearForm()">Clear</button>
+          <button class="btn btn-outline" onclick="exportCurrentCSV()">↓ CSV</button>
+          <button class="btn btn-outline" onclick="exportCurrentPDF()">↓ PDF</button>
+          <button class="btn btn-danger" id="delete-btn" style="display:none" onclick="deleteEntry()">🗑 Delete</button>
+        </div>
+
+      </div><!-- /notebook-page -->
+    </div><!-- /page-journal -->
+
+    <!-- ══════════════════ DASHBOARD PAGE ══════════════════ -->
+    <div class="page" id="page-dashboard">
+      <div class="page-title">Dashboard</div>
+      <span class="page-sub">Performance overview across all your entries</span>
+
+      <div class="filter-bar">
+        <select id="dash-filter" onchange="renderDashboard()">
+          <option value="all">All Time</option>
+          <option value="week">This Week</option>
+          <option value="month">This Month</option>
+        </select>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card c1"><div class="stat-label">Total Trades</div><div class="stat-value" id="stat-trades">0</div></div>
+        <div class="stat-card c2"><div class="stat-label">Net P&amp;L</div><div class="stat-value" id="stat-pnl">₹0</div></div>
+        <div class="stat-card c3"><div class="stat-label">Win Rate</div><div class="stat-value" id="stat-winrate">0%</div></div>
+        <div class="stat-card c4"><div class="stat-label">Avg Duration</div><div class="stat-value" id="stat-duration">—</div></div>
+        <div class="stat-card c5"><div class="stat-label">Top Tag</div><div class="stat-value" id="stat-tag" style="font-size:16px">—</div></div>
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-card-title">Daily P&amp;L Chart</div>
+        <div class="dash-card-body">
+          <div class="bar-chart" id="pnl-chart"></div>
+          <div style="display:flex;gap:16px;margin-top:8px;font-size:10px;color:var(--ink3);font-family:var(--body)">
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:1px;background:var(--profit);display:inline-block"></span>Profit</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:1px;background:var(--loss);display:inline-block"></span>Loss</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-card-title">Export All Data</div>
+        <div class="dash-card-body">
+          <div class="export-row">
+            <button class="btn btn-outline" onclick="exportAllCSV()">↓ Export All as CSV</button>
+            <button class="btn btn-outline" onclick="exportAllPDF()">↓ Export All as PDF</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ HISTORY PAGE ══════════════════ -->
+    <div class="page" id="page-history">
+      <div class="page-title">Trade History</div>
+      <span class="page-sub">All logged trades — click Edit to revisit any entry</span>
+
+      <div class="filter-bar">
+        <input type="text" placeholder="Search asset…" id="hist-search" oninput="renderHistory()">
+        <select id="hist-direction" onchange="renderHistory()">
+          <option value="">All Directions</option>
+          <option value="BUY">Buy</option>
+          <option value="SELL">Sell</option>
+        </select>
+        <select id="hist-period" onchange="renderHistory()">
+          <option value="all">All Time</option>
+          <option value="week">This Week</option>
+          <option value="month">This Month</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th><th>Exchange</th><th>Asset</th><th>Dir</th>
+              <th>Entry</th><th>Exit</th><th>Qty</th><th>P&amp;L</th>
+              <th>Tags</th><th>Mood</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="history-tbody">
+            <tr><td colspan="11" style="text-align:center;padding:40px;color:var(--ink3);font-style:italic">No trades logged yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /app-body -->
+
+<div id="toast"></div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────────────
+let allEntries = {};
+let currentDate = '';
+let currentEntryIndex = null;
+let currentDirection = 'BUY';
+let currentBias = 'Bullish';
+let currentConf = 0;
+let currentResult = '';
+let chartData = null;
+
+// ── INIT ───────────────────────────────────────────────────────────────────────
+function init() {
+  const today = getTodayStr();
+  currentDate = today;
+  document.getElementById('header-date').textContent = formatDateShort(today);
+  document.getElementById('sidebar-date').value = today;
+  document.getElementById('entry-date-display').value = today;
+  loadFromStorage();
+  refreshSidebar();
+  checkReminder();
+  newEntry();
+}
+
+function getTodayStr() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function formatDateShort(s) {
+  if (!s) return '';
+  return new Date(s + 'T00:00:00').toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' });
+}
+
+// ── STORAGE ───────────────────────────────────────────────────────────────────
+function loadFromStorage() {
+  try {
+    const raw = localStorage.getItem('tradelog_v2');
+    if (raw) allEntries = JSON.parse(raw);
+  } catch(e) { allEntries = {}; }
+}
+
+function saveToStorage() {
+  localStorage.setItem('tradelog_v2', JSON.stringify(allEntries));
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const names = { journal:'Journal', dashboard:'Dashboard', history:'History' };
+  document.querySelectorAll('.tab-btn').forEach(b => { if (b.textContent === names[page]) b.classList.add('active'); });
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'history')   renderHistory();
+}
+
+// ── REMINDER ─────────────────────────────────────────────────────────────────
+function checkReminder() {
+  const today = getTodayStr();
+  document.getElementById('reminder').style.display = (allEntries[today]||[]).length === 0 ? 'flex' : 'none';
+}
+
+function dismissReminder() {
+  document.getElementById('reminder').style.display = 'none';
+}
+
+// ── CONTROLS ──────────────────────────────────────────────────────────────────
+function setDirection(dir) {
+  currentDirection = dir;
+  document.getElementById('btn-buy').classList.toggle('active', dir==='BUY');
+  document.getElementById('btn-sell').classList.toggle('active', dir==='SELL');
+}
+
+function setBias(b) {
+  currentBias = b;
+  document.getElementById('btn-bull').classList.toggle('active', b==='Bullish');
+  document.getElementById('btn-bear').classList.toggle('active', b==='Bearish');
+}
+
+function setConf(n) {
+  currentConf = n;
+  document.querySelectorAll('.conf-btn').forEach((btn,i) => {
+    btn.classList.toggle('active', i < n);
+  });
+}
+
+function setResult(r) {
+  currentResult = r;
+  document.getElementById('result-win').classList.toggle('active', r==='WIN');
+  document.getElementById('result-loss').classList.toggle('active', r==='LOSS');
+}
+
+// ── CALCULATIONS ─────────────────────────────────────────────────────────────
+function calcPnL() {
+  const entry = parseFloat(document.getElementById('entry-price').value);
+  const exit  = parseFloat(document.getElementById('exit-price').value);
+  const qty   = parseFloat(document.getElementById('quantity').value) || 1;
+  const elAmt = document.getElementById('pnl-display');
+  const elPct = document.getElementById('pnl-pct-display');
+
+  if (!isNaN(entry) && !isNaN(exit)) {
+    let pnl = (exit - entry) * qty;
+    if (currentDirection === 'SELL') pnl = -pnl;
+    const pct = entry !== 0 ? ((exit - entry) / entry * 100) : 0;
+    const sign = pnl >= 0 ? '+' : '';
+    elAmt.textContent = sign + '₹' + pnl.toFixed(2);
+    elAmt.className = 'calc-display ' + (pnl >= 0 ? 'profit' : 'loss');
+    const pctSign = pct >= 0 ? '+' : '';
+    elPct.textContent = pctSign + pct.toFixed(2) + '%';
+    elPct.className = 'calc-display ' + (pct >= 0 ? 'profit' : 'loss');
+  } else {
+    elAmt.textContent = '—'; elAmt.className = 'calc-display';
+    elPct.textContent = '—'; elPct.className = 'calc-display';
+  }
+}
+
+function calcDuration() {
+  const et = document.getElementById('entry-time').value;
+  const xt = document.getElementById('exit-time').value;
+  const el = document.getElementById('holding-duration');
+  if (et && xt) {
+    const [eh,em] = et.split(':').map(Number);
+    const [xh,xm] = xt.split(':').map(Number);
+    let mins = (xh*60+xm) - (eh*60+em);
+    if (mins < 0) mins += 1440;
+    const h = Math.floor(mins/60), m = mins%60;
+    el.textContent = h > 0 ? `${h}h ${m}m` : `${m}m`;
+    el.className = 'calc-display';
+  } else {
+    el.textContent = '—';
+    el.className = 'calc-display';
+  }
+}
+
+function getPnLRaw() {
+  const entry = parseFloat(document.getElementById('entry-price').value);
+  const exit  = parseFloat(document.getElementById('exit-price').value);
+  const qty   = parseFloat(document.getElementById('quantity').value) || 1;
+  if (isNaN(entry) || isNaN(exit)) return null;
+  let pnl = (exit - entry) * qty;
+  if (currentDirection === 'SELL') pnl = -pnl;
+  return pnl;
+}
+
+// ── CHART UPLOAD ─────────────────────────────────────────────────────────────
+function handleChartUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    chartData = ev.target.result;
+    const img = document.getElementById('chart-preview');
+    img.src = chartData;
+    img.style.display = 'block';
+    document.getElementById('upload-text').style.display = 'none';
+    document.getElementById('chart-actions').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeChart() {
+  chartData = null;
+  document.getElementById('chart-preview').style.display = 'none';
+  document.getElementById('chart-preview').src = '';
+  document.getElementById('upload-text').style.display = 'block';
+  document.getElementById('chart-actions').style.display = 'none';
+  document.getElementById('chart-input').value = '';
+}
+
+// ── SAVE / DELETE ─────────────────────────────────────────────────────────────
+function getSelectedTags() {
+  return Array.from(document.querySelectorAll('.tag-checkbox:checked')).map(cb => cb.id.replace('tag-',''));
+}
+
+function saveEntry() {
+  currentDate = document.getElementById('entry-date-display').value || getTodayStr();
+  const entry = {
+    id: currentEntryIndex !== null && allEntries[currentDate]?.[currentEntryIndex]?.id
+        ? allEntries[currentDate][currentEntryIndex].id
+        : Date.now(),
+    date:           currentDate,
+    exchange:       document.getElementById('exchange').value,
+    asset:          document.getElementById('asset').value,
+    direction:      currentDirection,
+    marketBias:     currentBias,
+    marketSession:  document.getElementById('market-session').value,
+    mood:           document.getElementById('mood').value,
+    confidenceScore: currentConf,
+    setupValid:     document.getElementById('setup-yes').checked ? 'Yes' : document.getElementById('setup-no').checked ? 'No' : '',
+    followedRules:  document.getElementById('rules-yes').checked ? 'Yes' : document.getElementById('rules-no').checked ? 'No' : '',
+    psychFear:      document.getElementById('psych-fear').checked,
+    psychGreed:     document.getElementById('psych-greed').checked,
+    psychRevenge:   document.getElementById('psych-revenge').checked,
+    setupType:      document.getElementById('setup-type').value,
+    timeframe:      document.getElementById('timeframe').value,
+    entryPrice:     document.getElementById('entry-price').value,
+    entryTime:      document.getElementById('entry-time').value,
+    exitPrice:      document.getElementById('exit-price').value,
+    exitTime:       document.getElementById('exit-time').value,
+    targetPrice:    document.getElementById('target-price').value,
+    stopLoss:       document.getElementById('stoploss-price').value,
+    quantity:       document.getElementById('quantity').value,
+    holdingDuration: document.getElementById('holding-duration').textContent,
+    pnl:            getPnLRaw(),
+    result:         currentResult,
+    lessonLearned:  document.getElementById('lesson-learned').value,
+    biggestMistake: document.getElementById('biggest-mistake').value,
+    improvement:    document.getElementById('improvement').value,
+    tags:           getSelectedTags(),
+    prePlan:        document.getElementById('pre-plan').value,
+    postNotes:      document.getElementById('post-notes').value,
+    dailyLearning:  document.getElementById('daily-learning').value,
+    specialNotes:   document.getElementById('special-notes').value,
+    chart:          chartData,
+    savedAt:        new Date().toISOString()
+  };
+
+  if (!allEntries[currentDate]) allEntries[currentDate] = [];
+  if (currentEntryIndex !== null) {
+    allEntries[currentDate][currentEntryIndex] = entry;
+    toast('Entry updated!', 'success');
+  } else {
+    allEntries[currentDate].push(entry);
+    currentEntryIndex = allEntries[currentDate].length - 1;
+    toast('Entry saved!', 'success');
+  }
+
+  saveToStorage();
+  refreshSidebar();
+  checkReminder();
+  document.getElementById('delete-btn').style.display = '';
+}
+
+function deleteEntry() {
+  if (currentEntryIndex === null) return;
+  if (!confirm('Delete this entry? This cannot be undone.')) return;
+  allEntries[currentDate].splice(currentEntryIndex, 1);
+  if (!allEntries[currentDate].length) delete allEntries[currentDate];
+  saveToStorage();
+  refreshSidebar();
+  checkReminder();
+  newEntry();
+  toast('Entry deleted.', 'error');
+}
+
+function newEntry() {
+  currentEntryIndex = null;
+  chartData = null;
+  currentResult = '';
+  currentConf = 0;
+  clearForm();
+  document.getElementById('delete-btn').style.display = 'none';
+  document.querySelectorAll('.entry-item').forEach(el => el.classList.remove('active'));
+}
+
+function clearForm() {
+  ['exchange','asset','entry-price','exit-price','target-price','stoploss-price',
+   'quantity','pre-plan','post-notes','daily-learning','special-notes',
+   'lesson-learned','biggest-mistake','improvement'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('entry-time').value = '';
+  document.getElementById('exit-time').value = '';
+  document.getElementById('mood').value = '';
+  document.getElementById('setup-type').value = '';
+  document.getElementById('timeframe').value = '';
+  document.getElementById('market-session').selectedIndex = 0;
+  document.getElementById('holding-duration').textContent = '—';
+  document.getElementById('holding-duration').className = 'calc-display';
+  document.getElementById('pnl-display').textContent = '—';
+  document.getElementById('pnl-display').className = 'calc-display';
+  document.getElementById('pnl-pct-display').textContent = '—';
+  document.getElementById('pnl-pct-display').className = 'calc-display';
+  document.querySelectorAll('.tag-checkbox').forEach(cb => cb.checked = false);
+  ['setup-yes','setup-no','rules-yes','rules-no','psych-fear','psych-greed','psych-revenge'].forEach(id => {
+    document.getElementById(id).checked = false;
+  });
+  setDirection('BUY');
+  setBias('Bullish');
+  setResult('');
+  document.querySelectorAll('.conf-btn').forEach(b => b.classList.remove('active'));
+  currentConf = 0;
+  removeChart();
+}
+
+function loadEntry(date, idx) {
+  const e = allEntries[date]?.[idx];
+  if (!e) return;
+  currentDate = date;
+  currentEntryIndex = idx;
+
+  document.getElementById('sidebar-date').value = date;
+  document.getElementById('entry-date-display').value = date;
+  document.getElementById('exchange').value = e.exchange || '';
+  document.getElementById('asset').value = e.asset || '';
+  document.getElementById('entry-price').value = e.entryPrice || '';
+  document.getElementById('entry-time').value = e.entryTime || '';
+  document.getElementById('exit-price').value = e.exitPrice || '';
+  document.getElementById('exit-time').value = e.exitTime || '';
+  document.getElementById('target-price').value = e.targetPrice || '';
+  document.getElementById('stoploss-price').value = e.stopLoss || '';
+  document.getElementById('quantity').value = e.quantity || '';
+  document.getElementById('mood').value = e.mood || '';
+  document.getElementById('setup-type').value = e.setupType || '';
+  document.getElementById('timeframe').value = e.timeframe || '';
+
+  const msEl = document.getElementById('market-session');
+  for (let i=0;i<msEl.options.length;i++) {
+    if (msEl.options[i].value === e.marketSession) { msEl.selectedIndex = i; break; }
+  }
+
+  document.getElementById('pre-plan').value = e.prePlan || '';
+  document.getElementById('post-notes').value = e.postNotes || '';
+  document.getElementById('daily-learning').value = e.dailyLearning || '';
+  document.getElementById('special-notes').value = e.specialNotes || '';
+  document.getElementById('lesson-learned').value = e.lessonLearned || '';
+  document.getElementById('biggest-mistake').value = e.biggestMistake || '';
+  document.getElementById('improvement').value = e.improvement || '';
+
+  document.getElementById('setup-yes').checked = e.setupValid === 'Yes';
+  document.getElementById('setup-no').checked  = e.setupValid === 'No';
+  document.getElementById('rules-yes').checked = e.followedRules === 'Yes';
+  document.getElementById('rules-no').checked  = e.followedRules === 'No';
+  document.getElementById('psych-fear').checked    = !!e.psychFear;
+  document.getElementById('psych-greed').checked   = !!e.psychGreed;
+  document.getElementById('psych-revenge').checked = !!e.psychRevenge;
+
+  document.querySelectorAll('.tag-checkbox').forEach(cb => {
+    cb.checked = (e.tags||[]).includes(cb.id.replace('tag-',''));
+  });
+
+  setDirection(e.direction || 'BUY');
+  setBias(e.marketBias || 'Bullish');
+  setResult(e.result || '');
+  setConf(e.confidenceScore || 0);
+
+  document.getElementById('holding-duration').textContent = e.holdingDuration || '—';
+  calcPnL();
+  calcDuration();
+
+  if (e.chart) {
+    chartData = e.chart;
+    document.getElementById('chart-preview').src = e.chart;
+    document.getElementById('chart-preview').style.display = 'block';
+    document.getElementById('upload-text').style.display = 'none';
+    document.getElementById('chart-actions').style.display = 'block';
+  } else {
+    removeChart();
+  }
+
+  document.getElementById('delete-btn').style.display = '';
+  showPage('journal');
+  refreshSidebarActive(date, idx);
+}
+
+// ── SIDEBAR ───────────────────────────────────────────────────────────────────
+function refreshSidebar() {
+  const list = document.getElementById('entries-list');
+  const dates = Object.keys(allEntries).sort().reverse();
+
+  if (!dates.length) {
+    list.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>No entries yet</p></div>';
+    return;
+  }
+
+  list.innerHTML = '';
+  dates.forEach(date => {
+    allEntries[date].forEach((e, idx) => {
+      const pnl = e.pnl;
+      const pnlStr = pnl !== null && pnl !== undefined
+        ? (pnl >= 0 ? '+₹'+pnl.toFixed(2) : '-₹'+Math.abs(pnl).toFixed(2)) : '';
+      const pnlClass = pnl !== null && pnl !== undefined ? (pnl >= 0 ? 'profit' : 'loss') : '';
+      const el = document.createElement('div');
+      el.className = 'entry-item';
+      el.dataset.date = date;
+      el.dataset.idx = idx;
+      el.innerHTML = `
+        <div class="entry-date">${date} · ${e.asset||'—'}</div>
+        <div class="entry-meta">
+          <span>${e.direction||''} · ${(e.tags||[]).slice(0,2).join(', ')||'No tags'}</span>
+          <span class="entry-pnl ${pnlClass}">${pnlStr}</span>
+        </div>`;
+      el.onclick = () => loadEntry(date, idx);
+      list.appendChild(el);
+    });
+  });
+}
+
+function refreshSidebarActive(date, idx) {
+  document.querySelectorAll('.entry-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.date === date && parseInt(el.dataset.idx) === idx);
+  });
+}
+
+function loadDate(dateStr) {
+  currentDate = dateStr;
+  document.getElementById('entry-date-display').value = dateStr;
+  refreshSidebar();
+  newEntry();
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────────────
+function renderDashboard() {
+  const filter = document.getElementById('dash-filter').value;
+  const entries = getFilteredEntries(filter);
+  const total = entries.length;
+  const netPnl = entries.reduce((s,e) => s+(e.pnl||0), 0);
+  const wins = entries.filter(e => (e.pnl||0)>0).length;
+  const winRate = total>0 ? Math.round((wins/total)*100) : 0;
+  const tagCount = {};
+  entries.forEach(e => (e.tags||[]).forEach(t => tagCount[t]=(tagCount[t]||0)+1));
+  const topTag = Object.keys(tagCount).sort((a,b)=>tagCount[b]-tagCount[a])[0]||'—';
+  const durs = entries.map(e=>parseDuration(e.holdingDuration)).filter(d=>d>0);
+  const avgMins = durs.length>0 ? Math.round(durs.reduce((a,b)=>a+b,0)/durs.length) : 0;
+  const avgH = Math.floor(avgMins/60), avgM = avgMins%60;
+
+  document.getElementById('stat-trades').textContent = total;
+  const pnlEl = document.getElementById('stat-pnl');
+  pnlEl.textContent = (netPnl>=0?'+₹':'-₹')+Math.abs(netPnl).toFixed(2);
+  pnlEl.className = 'stat-value '+(netPnl>=0?'profit':'loss');
+  document.getElementById('stat-winrate').textContent = winRate+'%';
+  document.getElementById('stat-tag').textContent = topTag;
+  document.getElementById('stat-duration').textContent = avgMins>0?(avgH>0?`${avgH}h ${avgM}m`:`${avgM}m`):'—';
+
+  renderPnLChart(filter);
+}
+
+function parseDuration(str) {
+  if (!str||str==='—') return 0;
+  let mins=0;
+  const h=str.match(/(\d+)h/), m=str.match(/(\d+)m/);
+  if(h) mins+=parseInt(h[1])*60;
+  if(m) mins+=parseInt(m[1]);
+  return mins;
+}
+
+function renderPnLChart(filter) {
+  const chart = document.getElementById('pnl-chart');
+  const entries = getFilteredEntries(filter);
+  const byDate = {};
+  entries.forEach(e => { byDate[e.date]=(byDate[e.date]||0)+(e.pnl||0); });
+  const dates = Object.keys(byDate).sort().slice(-14);
+  if (!dates.length) { chart.innerHTML='<span style="font-family:var(--body);font-style:italic;font-size:12px;color:var(--ink3)">No data to display</span>'; return; }
+  const maxAbs = Math.max(...dates.map(d=>Math.abs(byDate[d])),1);
+  chart.innerHTML='';
+  dates.forEach(date => {
+    const val=byDate[date];
+    const pct=Math.max((Math.abs(val)/maxAbs)*100,3);
+    const bar=document.createElement('div');
+    bar.className='bar-item';
+    bar.style.height=pct+'%';
+    bar.style.background=val>=0?'var(--profit)':'var(--loss)';
+    bar.style.opacity='0.75';
+    bar.setAttribute('data-tip',`${date}: ${val>=0?'+':''}₹${val.toFixed(2)}`);
+    chart.appendChild(bar);
+  });
+}
+
+function getFilteredEntries(filter) {
+  const all=[];
+  Object.keys(allEntries).forEach(date => allEntries[date].forEach(e=>all.push({...e,date})));
+  if (filter==='all') return all;
+  const now=new Date();
+  return all.filter(e => {
+    const d=new Date(e.date);
+    if(filter==='week'){const s=new Date(now);s.setDate(now.getDate()-now.getDay());return d>=s;}
+    if(filter==='month') return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+    return true;
+  });
+}
+
+// ── HISTORY ───────────────────────────────────────────────────────────────────
+function renderHistory() {
+  const search=document.getElementById('hist-search').value.toLowerCase();
+  const dir=document.getElementById('hist-direction').value;
+  const period=document.getElementById('hist-period').value;
+  const tbody=document.getElementById('history-tbody');
+  let entries=getFilteredEntries(period);
+  if(search) entries=entries.filter(e=>(e.asset||'').toLowerCase().includes(search)||(e.exchange||'').toLowerCase().includes(search));
+  if(dir) entries=entries.filter(e=>e.direction===dir);
+  entries.sort((a,b)=>b.date.localeCompare(a.date));
+  if(!entries.length){
+    tbody.innerHTML='<tr><td colspan="11" style="text-align:center;padding:40px;color:var(--ink3);font-style:italic;font-family:var(--body)">No trades match the filter.</td></tr>';
+    return;
+  }
+  tbody.innerHTML=entries.map(e=>{
+    const pnl=e.pnl;
+    const pnlStr=pnl!==null&&pnl!==undefined?(pnl>=0?'+₹'+pnl.toFixed(2):'-₹'+Math.abs(pnl).toFixed(2)):'—';
+    const pnlColor=pnl!==null&&pnl!==undefined?(pnl>=0?'var(--profit)':'var(--loss)'):'var(--ink3)';
+    return `<tr>
+      <td style="font-family:var(--mono);font-size:11px">${e.date}</td>
+      <td>${e.exchange||'—'}</td>
+      <td style="font-weight:600">${e.asset||'—'}</td>
+      <td><span class="badge badge-${(e.direction||'BUY').toLowerCase()}">${e.direction||'BUY'}</span></td>
+      <td style="font-family:var(--mono);font-size:11px">${e.entryPrice?'₹'+e.entryPrice:'—'}</td>
+      <td style="font-family:var(--mono);font-size:11px">${e.exitPrice?'₹'+e.exitPrice:'—'}</td>
+      <td style="font-family:var(--mono);font-size:11px">${e.quantity||'—'}</td>
+      <td style="color:${pnlColor};font-weight:600;font-family:var(--mono);font-size:11px">${pnlStr}</td>
+      <td style="color:var(--ink3);font-size:11px">${(e.tags||[]).join(', ')||'—'}</td>
+      <td style="color:var(--ink3);font-size:11px">${e.mood||'—'}</td>
+      <td><button onclick="loadEntry('${e.date}',${findEntryIdx(e.date,e.id)})" class="btn btn-outline" style="padding:4px 10px;font-size:10px">Edit</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function findEntryIdx(date,id) {
+  return (allEntries[date]||[]).findIndex(e=>e.id===id);
+}
+
+// ── EXPORT ────────────────────────────────────────────────────────────────────
+function buildCSV(entries) {
+  const h=['Date','Exchange','Asset','Direction','Entry Price','Exit Price','Qty','P&L','Result','Tags','Mood','Confidence','Setup Valid','Followed Rules','Duration','Lesson','Mistake','Improvement','Pre Plan','Post Notes'];
+  const rows=entries.map(e=>[
+    e.date,e.exchange,e.asset,e.direction,e.entryPrice,e.exitPrice,e.quantity,
+    e.pnl!=null?e.pnl.toFixed(2):'',e.result,(e.tags||[]).join('|'),e.mood,
+    e.confidenceScore,e.setupValid,e.followedRules,e.holdingDuration,
+    (e.lessonLearned||'').replace(/\n/g,' '),(e.biggestMistake||'').replace(/\n/g,' '),
+    (e.improvement||'').replace(/\n/g,' '),(e.prePlan||'').replace(/\n/g,' '),(e.postNotes||'').replace(/\n/g,' ')
+  ].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`));
+  return [h.join(','),...rows.map(r=>r.join(','))].join('\n');
+}
+
+function downloadFile(content,filename,type) {
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([content],{type}));
+  a.download=filename;
+  a.click();
+}
+
+function exportCurrentCSV(){
+  const entries=(allEntries[currentDate]||[]).map(e=>({...e,date:currentDate}));
+  if(!entries.length){toast('No entries for today.','error');return;}
+  downloadFile(buildCSV(entries),`tradelog-${currentDate}.csv`,'text/csv');
+  toast('CSV exported!','success');
+}
+
+function exportAllCSV(){
+  const all=getFilteredEntries('all');
+  if(!all.length){toast('No entries to export.','error');return;}
+  downloadFile(buildCSV(all),'tradelog-all.csv','text/csv');
+  toast('All entries exported!','success');
+}
+
+function exportCurrentPDF(){exportPDF(allEntries[currentDate]||[],currentDate);}
+function exportAllPDF(){exportPDF(getFilteredEntries('all'),'All Time');}
+
+function exportPDF(entries,label){
+  if(!entries.length){toast('No entries to export.','error');return;}
+  const win=window.open('','_blank');
+  const netPnl=entries.reduce((s,e)=>s+(e.pnl||0),0);
+  const rows=entries.map(e=>{
+    const c=e.pnl>0?'#2d6a2d':e.pnl<0?'#8b2020':'#666';
+    return `<tr>
+      <td>${e.date}</td><td>${e.asset||'—'}</td><td>${e.direction||'—'}</td>
+      <td>₹${e.entryPrice||'—'}</td><td>₹${e.exitPrice||'—'}</td>
+      <td style="color:${c};font-weight:bold">${e.pnl!=null?(e.pnl>=0?'+₹':'-₹')+Math.abs(e.pnl).toFixed(2):'—'}</td>
+      <td>${(e.tags||[]).join(', ')||'—'}</td><td>${e.result||'—'}</td>
+    </tr>`;
+  }).join('');
+  win.document.write(`<html><head><title>TradeLog Export — ${label}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lora&display=swap');
+    body{font-family:'Lora',Georgia,serif;padding:32px;background:#f5f0e8;color:#2a2318}
+    h1{font-family:'Playfair Display',serif;font-size:28px;margin-bottom:4px;color:#2a2318}
+    p{color:#8a7d6a;margin-bottom:20px;font-size:13px;font-style:italic}
+    table{width:100%;border-collapse:collapse}
+    th{background:#6b4c2a;color:#f5ead8;padding:9px 12px;text-align:left;font-size:11px;letter-spacing:1px;text-transform:uppercase}
+    td{padding:9px 12px;border-bottom:1px solid #ddd6c6;font-size:12px}
+    tr:nth-child(even){background:#ede8de}
+    .net{font-size:20px;font-weight:bold;font-family:'Playfair Display',serif;color:${netPnl>=0?'#2d6a2d':'#8b2020'}}
+  </style></head><body>
+  <h1>Trading Journal Export</h1>
+  <p>${label} &middot; Trades: ${entries.length} &middot; Net P&amp;L: <span class="net">${netPnl>=0?'+₹':'-₹'}${Math.abs(netPnl).toFixed(2)}</span></p>
+  <table><tr><th>Date</th><th>Asset</th><th>Dir</th><th>Entry</th><th>Exit</th><th>P&L</th><th>Tags</th><th>Result</th></tr>${rows}</table>
+  </body></html>`);
+  win.document.close();
+  win.print();
+  toast('PDF ready!','success');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function toast(msg,type='success'){
+  const el=document.getElementById('toast');
+  el.textContent=(type==='success'?'✓ ':'✕ ')+msg;
+  el.className='show '+type;
+  setTimeout(()=>el.className='',2600);
+}
+
+// ── START ─────────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
